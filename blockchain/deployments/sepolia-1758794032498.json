@@ -1,0 +1,19 @@
+{
+  "network": "sepolia",
+  "timestamp": "2025-09-25T09:53:52.497Z",
+  "deployer": "0xEAFB6F9923d11496298993355bca0ca045e36aE7",
+  "contracts": {
+    "CarbonCreditToken": {
+      "address": "0xED7a9D61091CBFB927aAe5B897d7aebb81E633D7",
+      "transactionHash": "0x374b94a11e4077edd3d9ae0008504a5b2624b093629a051d266e173ede5da62c"
+    },
+    "BlueReefRegistry": {
+      "address": "0x046BD349B6F8aC89a49176f1eaa85bc2eF1B6043",
+      "transactionHash": "0xcdb5cc6762f6bbee7f3517878ed5b95277a78e1f5ce3fe9874a69b97f2e29c4e"
+    }
+  },
+  "gasUsed": {
+    "CarbonCreditToken": "Deployed successfully",
+    "BlueReefRegistry": "Deployed successfully"
+  }
+}

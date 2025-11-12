@@ -1,0 +1,229 @@
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Blue Carbon Registry Design System - Dark Futuristic Theme */
+
+@layer base {
+  :root {
+    /* Dark theme base colors */
+    --background: 220 26% 8%;
+    --foreground: 210 40% 95%;
+
+    /* Cards and surfaces */
+    --card: 220 24% 12%;
+    --card-foreground: 210 40% 95%;
+
+    --popover: 220 24% 12%;
+    --popover-foreground: 210 40% 95%;
+
+    /* Ocean blue primary */
+    --primary: 210 90% 55%;
+    --primary-foreground: 220 26% 8%;
+    --primary-glow: 210 90% 70%;
+
+    /* Forest green secondary */
+    --secondary: 145 85% 35%;
+    --secondary-foreground: 210 40% 95%;
+    --secondary-glow: 145 85% 50%;
+
+    /* Electric teal accent */
+    --accent: 180 100% 60%;
+    --accent-foreground: 220 26% 8%;
+    --accent-glow: 180 100% 75%;
+
+    /* Neon lime for highlights */
+    --highlight: 80 100% 60%;
+    --highlight-foreground: 220 26% 8%;
+    --highlight-glow: 80 100% 75%;
+
+    /* Muted surfaces */
+    --muted: 220 20% 16%;
+    --muted-foreground: 215 15% 65%;
+
+    /* Status colors */
+    --success: 145 85% 35%;
+    --success-foreground: 210 40% 95%;
+    --warning: 45 100% 60%;
+    --warning-foreground: 220 26% 8%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 210 40% 95%;
+
+    /* Borders and inputs */
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 210 90% 55%;
+
+    /* Design system gradients */
+    --gradient-ocean: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-forest: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-glow)));
+    --gradient-electric: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-glow)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(220 20% 15%));
+
+    /* Shadows with glow effects */
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.3);
+    --shadow-accent: 0 0 30px hsl(var(--accent) / 0.4);
+    --shadow-card: 0 8px 32px hsl(220 26% 4% / 0.4);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-glow: box-shadow 0.3s ease, filter 0.3s ease;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Glow effects */
+  .glow-primary {
+    @apply shadow-[0_0_40px_hsl(var(--primary)/0.3)] transition-[box-shadow] duration-300;
+  }
+  
+  .glow-accent {
+    @apply shadow-[0_0_30px_hsl(var(--accent)/0.4)] transition-[box-shadow] duration-300;
+  }
+  
+  .glow-highlight {
+    @apply shadow-[0_0_20px_hsl(var(--highlight)/0.5)] transition-[box-shadow] duration-300;
+  }
+
+  /* Interactive animations */
+  .hover-glow:hover {
+    @apply glow-primary;
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+  
+  .pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-ocean {
+    background: var(--gradient-ocean);
+  }
+  
+  .bg-gradient-forest {
+    background: var(--gradient-forest);
+  }
+  
+  .bg-gradient-electric {
+    background: var(--gradient-electric);
+  }
+  
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+
+  /* Chart animations */
+  .chart-line {
+    @apply stroke-2;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: draw-line 2s ease-out forwards;
+  }
+
+  @keyframes draw-line {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Particle effect */
+  .particle-effect {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .particle-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(2px 2px at 20px 30px, hsl(var(--accent)), transparent),
+                      radial-gradient(2px 2px at 40px 70px, hsl(var(--highlight)), transparent),
+                      radial-gradient(1px 1px at 90px 40px, hsl(var(--primary)), transparent);
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.3;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+}
