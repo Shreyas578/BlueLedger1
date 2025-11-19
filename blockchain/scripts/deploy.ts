@@ -3,16 +3,17 @@ import * as fs from "fs";
 import * as path from "path";
 
 async function main() {
-  console.log("🚀 Starting Blue Reef Registry deployment to Sepolia testnet...");
+  console.log("🚀 Starting Blue Reef Registry deployment to Moonbase Alpha testnet...");
   
   const [deployer] = await ethers.getSigners();
   console.log("📝 Deploying contracts with account:", deployer.address);
   
   const balance = await ethers.provider.getBalance(deployer.address);
-  console.log("💰 Account balance:", ethers.formatEther(balance), "ETH");
+  console.log("💰 Account balance:", ethers.formatEther(balance), "DEV");
 
-  if (balance < ethers.parseEther("0.01")) {
-    console.log("⚠️  WARNING: Low balance! You may need more test ETH from a faucet.");
+  if (balance < ethers.parseEther("0.5")) {
+    console.log("⚠️  WARNING: Low balance! You may need more DEV tokens from the faucet.");
+    console.log("   Get testnet tokens at: https://faucet.moonbeam.network");
   }
 
   // Deploy Carbon Credit Token first
@@ -53,7 +54,8 @@ async function main() {
 
   // Save deployment addresses
   const deploymentInfo = {
-    network: "sepolia",
+    network: "moonbase",
+    chainId: 1287,
     timestamp: new Date().toISOString(),
     deployer: deployer.address,
     contracts: {
@@ -78,7 +80,7 @@ async function main() {
     fs.mkdirSync(deploymentsDir, { recursive: true });
   }
 
-  const deploymentFile = path.join(deploymentsDir, `sepolia-${Date.now()}.json`);
+  const deploymentFile = path.join(deploymentsDir, `moonbase-${Date.now()}.json`);
   fs.writeFileSync(deploymentFile, JSON.stringify(deploymentInfo, null, 2));
   console.log("📁 Deployment info saved to:", deploymentFile);
 
@@ -86,8 +88,9 @@ async function main() {
   const envContent = `# Generated deployment addresses - ${new Date().toISOString()}
 VITE_REGISTRY_CONTRACT_ADDRESS=${registryAddress}
 VITE_CARBON_TOKEN_ADDRESS=${carbonTokenAddress}
-VITE_CHAIN_ID=11155111
-VITE_NETWORK_NAME=sepolia
+VITE_CHAIN_ID=1287
+VITE_NETWORK_NAME=moonbase
+VITE_RPC_URL=https://rpc.api.moonbase.moonbeam.network
 `;
 
   const frontendEnvFile = path.join(__dirname, "../../.env.local");
@@ -99,12 +102,12 @@ VITE_NETWORK_NAME=sepolia
   console.log("   🪙 Carbon Credit Token:", carbonTokenAddress);
   console.log("   📝 Blue Reef Registry:", registryAddress);
   
-  console.log("\n🔗 Etherscan Links:");
-  console.log(`   🪙 Token: https://sepolia.etherscan.io/address/${carbonTokenAddress}`);
-  console.log(`   📝 Registry: https://sepolia.etherscan.io/address/${registryAddress}`);
+  console.log("\n🔗 Moonscan Links:");
+  console.log(`   🪙 Token: https://moonbase.moonscan.io/address/${carbonTokenAddress}`);
+  console.log(`   📝 Registry: https://moonbase.moonscan.io/address/${registryAddress}`);
 
   console.log("\n📝 Next Steps:");
-  console.log("   1. Verify contracts on Etherscan (optional)");
+  console.log("   1. Verify contracts on Moonscan (optional)");
   console.log("   2. Update frontend configuration");
   console.log("   3. Test contract interactions");
   console.log("   4. Set up backend mock services");
