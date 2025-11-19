@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  console.log("🏠 Starting local deployment for testing...");
+  console.log("🏠 Starting Moonbase Alpha deployment for testing...");
   
   const [deployer, ngo, government, user] = await ethers.getSigners();
   console.log("📝 Deploying with accounts:");
@@ -10,39 +10,62 @@ async function main() {
   console.log("   Government:", government.address);
   console.log("   User:", user.address);
 
+  const balance = await ethers.provider.getBalance(deployer.address);
+  console.log("💰 Deployer balance:", ethers.formatEther(balance), "DEV");
+
+  if (balance < ethers.parseEther("1")) {
+    console.log("⚠️  WARNING: Low balance! Get DEV tokens from: https://faucet.moonbeam.network");
+  }
+
   // Deploy contracts
+  console.log("\n📄 Deploying CarbonCreditToken...");
   const CarbonCreditToken = await ethers.getContractFactory("CarbonCreditToken");
   const carbonToken = await CarbonCreditToken.deploy(government.address);
-  await carbonToken.deployed();
+  await carbonToken.waitForDeployment();
+  const carbonTokenAddress = await carbonToken.getAddress();
+  console.log("✅ CarbonCreditToken deployed to:", carbonTokenAddress);
 
+  console.log("\n📄 Deploying BlueReefRegistry...");
   const BlueReefRegistry = await ethers.getContractFactory("BlueReefRegistry");
   const registry = await BlueReefRegistry.deploy();
-  await registry.deployed();
+  await registry.waitForDeployment();
+  const registryAddress = await registry.getAddress();
+  console.log("✅ BlueReefRegistry deployed to:", registryAddress);
 
   console.log("\n✅ Contracts deployed:");
-  console.log("   Token:", carbonToken.address);
-  console.log("   Registry:", registry.address);
+  console.log("   Token:", carbonTokenAddress);
+  console.log("   Registry:", registryAddress);
 
   // Setup test data
   console.log("\n🧪 Setting up test data...");
-
+  
   // Register users
-  await registry.connect(ngo).registerUser(0, "Green Earth NGO"); // NGO
-  await registry.connect(user).registerUser(1, "Village Panchayat"); // Panchayat
+  console.log("   Registering NGO...");
+  const tx1 = await registry.connect(ngo).registerUser(0, "Green Earth NGO"); // NGO
+  await tx1.wait();
+  
+  console.log("   Registering Panchayat...");
+  const tx2 = await registry.connect(user).registerUser(1, "Village Panchayat"); // Panchayat
+  await tx2.wait();
   
   // Submit test application
-  await registry.connect(ngo).submitApplication(
+  console.log("   Submitting test application...");
+  const tx3 = await registry.connect(ngo).submitApplication(
     "Green Earth NGO",
     "QmTestDocumentHash123",
     '{"type":"Polygon","coordinates":[[[77.5946,12.9716],[77.5947,12.9716],[77.5947,12.9717],[77.5946,12.9717],[77.5946,12.9716]]]}',
     100, // 100 hectares
     "Mangrove"
   );
-
+  await tx3.wait();
+  
   // Approve application
-  await registry.connect(government).updateApplicationStatus(1, 2, "Application approved for testing"); // 2 = Approved
-
+  console.log("   Approving application...");
+  const tx4 = await registry.connect(government).updateApplicationStatus(1, 2, "Application approved for testing"); // 2 = Approved
+  await tx4.wait();
+  
   // Deploy a test project contract
+  console.log("\n📄 Deploying ProjectContract...");
   const ProjectContract = await ethers.getContractFactory("ProjectContract");
   const project = await ProjectContract.deploy(
     1, // application ID
@@ -54,46 +77,72 @@ async function main() {
     government.address,
     1000 // target credits
   );
-  await project.deployed();
-
+  await project.waitForDeployment();
+  const projectAddress = await project.getAddress();
+  console.log("✅ ProjectContract deployed to:", projectAddress);
+  
   // Link project to application
-  await registry.connect(government).setProjectContract(1, project.address);
-
+  console.log("   Linking project to application...");
+  const tx5 = await registry.connect(government).setProjectContract(1, projectAddress);
+  await tx5.wait();
+  
   // Authorize project to mint tokens
-  await carbonToken.connect(government).authorizeProject(project.address);
-
+  console.log("   Authorizing project to mint tokens...");
+  const tx6 = await carbonToken.connect(government).authorizeProject(projectAddress);
+  await tx6.wait();
+  
   // Add test NDVI reading
-  await project.connect(government).addNDVIReading(
+  console.log("   Adding NDVI reading...");
+  const tx7 = await project.connect(government).addNDVIReading(
     7500, // 0.75 NDVI
     8500, // 85% coverage
     "QmTestSatelliteImage123"
   );
-
+  await tx7.wait();
+  
   // Mint some test credits
-  await carbonToken.connect(government).mintCredits(
-    project.address,
+  console.log("   Minting test credits...");
+  const tx8 = await carbonToken.connect(government).mintCredits(
+    projectAddress,
     ngo.address,
     500, // 500 credits
     "Test Mangrove Project",
     '{"type":"Polygon","coordinates":[[[77.5946,12.9716],[77.5947,12.9716],[77.5947,12.9717],[77.5946,12.9717],[77.5946,12.9716]]]}',
     1 // NDVI reading ID
   );
-
+  await tx8.wait();
+  
   console.log("✅ Test data setup complete!");
+  
   console.log("\n📊 Test Results:");
-  console.log("   Applications:", await registry.getTotalApplications());
-  console.log("   NGO Credits:", ethers.utils.formatEther(await carbonToken.balanceOf(ngo.address)));
-  console.log("   Project Readings:", await project.getTotalNDVIReadings());
+  const totalApps = await registry.getTotalApplications();
+  const ngoBalance = await carbonToken.balanceOf(ngo.address);
+  const totalReadings = await project.getTotalNDVIReadings();
+  
+  console.log("   Applications:", totalApps.toString());
+  console.log("   NGO Credits:", ethers.formatEther(ngoBalance));
+  console.log("   Project Readings:", totalReadings.toString());
+  
+  console.log("\n🎯 Moonbase Alpha testing environment ready!");
+  console.log("\n📋 Contract Addresses:");
+  console.log("   Registry:", registryAddress);
+  console.log("   Token:", carbonTokenAddress);
+  console.log("   Project:", projectAddress);
+  
+  console.log("\n🔗 Moonscan Links:");
+  console.log(`   Registry: https://moonbase.moonscan.io/address/${registryAddress}`);
+  console.log(`   Token: https://moonbase.moonscan.io/address/${carbonTokenAddress}`);
+  console.log(`   Project: https://moonbase.moonscan.io/address/${projectAddress}`);
 
-  console.log("\n🎯 Local testing environment ready!");
-  console.log("   Registry:", registry.address);
-  console.log("   Token:", carbonToken.address);
-  console.log("   Project:", project.address);
+  console.log("\n📝 Test Accounts:");
+  console.log(`   NGO: ${ngo.address}`);
+  console.log(`   Government: ${government.address}`);
+  console.log(`   User: ${user.address}`);
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error);
+    console.error("❌ Deployment failed:", error);
     process.exit(1);
   });
